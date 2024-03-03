@@ -1,0 +1,407 @@
+package DAO;
+
+import Entity.Jucarie;
+import SQL.MySQL;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DaoImplement implements JucarieDao {
+
+    private static final String SQL_INSERT = "insert into ? values (?,?,?,?,?,?,?)";
+    private static final String SQL_FIND_CHEAP_TOY = "select * from datele where pret = (select min(pret) from datele);";
+    private static final String SQL_FIND_EXPENSIVE_TOY = "select * from datele where pret = (select max(pret) from datele);";
+    private static final String SQL_ORDER_ALL_DOLLS_BY_PRICE = "select * from papusi order by pret;";
+    private static final String SQL_FIND_AVG_PRICE_BY_COUNTRY = "SELECT avg(pret) as Pretul_mediu_al_jucariilor FROM datele where tara=?";
+    private static final String SQL_FIND_TOYS_FROM_MOLDOVA = "select * from datele where tara='Moldova';";
+    private static final String SQL_FIND_TOYS_BY_PRICE = "select * from datele where varsta>=? and varsta<=? and pret<?;";
+    private static final String SQL_COUNT_TOYS_SOLD_1DAY = "SELECT sum(pr_vandute) as produse_vandute_in_1_zi FROM datele;";
+    private static final String SQL_SORT_TOYS_BY_POPULARITY = "select * from datele order by pr_vandute DESC;";
+    private static final String SQL_FIND_ID = "select * from datele where id_d=?";
+    private static final String SQL_datele = "create or replace view datele as select * from papusi UNION select * from masini UNION select * from lego UNION select * from puzzle;";
+
+    MySQL conexiune = new MySQL();
+
+    @Override
+    public List<Jucarie> findAllDolls() throws DaoException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        List<Jucarie> lista = new ArrayList<>();
+        try{
+            conn=conexiune.createConnection();
+            statement=conn.prepareStatement(SQL_ORDER_ALL_DOLLS_BY_PRICE);
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()){
+                Jucarie jucarie = new Jucarie();
+                jucarie.setID(rs.getString("id_d"));
+                jucarie.setDenumire(rs.getString("den"));
+                jucarie.setPret(rs.getInt("pret"));
+                jucarie.setVarsta(rs.getInt("varsta"));
+                jucarie.setCantitate(rs.getInt("cantitate"));
+                jucarie.setPr_vandute(rs.getInt("pr_vandute"));
+                jucarie.setTara(rs.getString("tara"));
+                lista.add(jucarie);
+            }
+        }
+        catch (SQLException e) {throw new DaoException(e);}
+        finally {
+            close(statement);
+            close(conn);
+        }
+        return lista;
+    }
+
+    @Override
+    public Jucarie findCheapToy() throws DaoException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        Jucarie jucarie = null;
+        try{
+            conn=conexiune.createConnection();
+            statement=conn.prepareStatement(SQL_FIND_CHEAP_TOY);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next() || rs != null){
+                jucarie = new Jucarie();
+                jucarie.setID(rs.getString("id_d"));
+                jucarie.setDenumire(rs.getString("den"));
+                jucarie.setPret(rs.getInt("pret"));
+                jucarie.setVarsta(rs.getInt("varsta"));
+                jucarie.setCantitate(rs.getInt("cantitate"));
+                jucarie.setPr_vandute(rs.getInt("pr_vandute"));
+                jucarie.setTara(rs.getString("tara"));
+
+            }
+
+        } catch (SQLException e) {throw new DaoException(e);}
+        finally {
+            close(statement);
+            close(conn);
+        }
+        return jucarie;
+    }
+
+    @Override
+    public Jucarie findExpensiveToy() throws DaoException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        Jucarie jucarie = null;
+        try{
+            conn=conexiune.createConnection();
+            statement=conn.prepareStatement(SQL_FIND_EXPENSIVE_TOY);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next() || rs != null){
+                jucarie = new Jucarie();
+                jucarie.setID(rs.getString("id_d"));
+                jucarie.setDenumire(rs.getString("den"));
+                jucarie.setPret(rs.getInt("pret"));
+                jucarie.setVarsta(rs.getInt("varsta"));
+                jucarie.setCantitate(rs.getInt("cantitate"));
+                jucarie.setPr_vandute(rs.getInt("pr_vandute"));
+                jucarie.setTara(rs.getString("tara"));
+
+            }
+
+        } catch (SQLException e) {throw new DaoException(e);}
+        finally {
+            close(statement);
+            close(conn);
+        }
+        return jucarie;
+    }
+
+    @Override
+    public double findAveragePriceCountry(String country) throws DaoException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        double n = 0;
+
+        try{
+            conn=conexiune.createConnection();
+            statement=conn.prepareStatement(SQL_FIND_AVG_PRICE_BY_COUNTRY);
+            statement.setString(1,country);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next() || rs!=null) n=rs.getDouble("Pretul_mediu_al_jucariilor");
+        }
+        catch (SQLException e) {throw new DaoException(e);}
+        finally {
+            close(statement);
+            close(conn);
+        }
+
+        return n;
+    }
+
+    @Override
+    public List<Jucarie> findAllMoldova() throws DaoException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        List<Jucarie> lista = new ArrayList<>();
+        try{
+            conn=conexiune.createConnection();
+            statement=conn.prepareStatement(SQL_FIND_TOYS_FROM_MOLDOVA);
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()){
+                Jucarie jucarie = new Jucarie();
+                jucarie.setID(rs.getString("id_d"));
+                jucarie.setDenumire(rs.getString("den"));
+                jucarie.setPret(rs.getInt("pret"));
+                jucarie.setVarsta(rs.getInt("varsta"));
+                jucarie.setCantitate(rs.getInt("cantitate"));
+                jucarie.setPr_vandute(rs.getInt("pr_vandute"));
+                jucarie.setTara(rs.getString("tara"));
+                lista.add(jucarie);
+            }
+        }
+        catch (SQLException e) {throw new DaoException(e);}
+        finally {
+            close(statement);
+            close(conn);
+        }
+        return lista;
+    }
+
+    @Override
+    public List<Jucarie> findAllPriceAge(int v1, int v2, int pret) throws DaoException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        List<Jucarie> lista = new ArrayList<>();
+        try{
+            conn=conexiune.createConnection();
+            statement=conn.prepareStatement(SQL_FIND_TOYS_BY_PRICE);
+            statement.setInt(1,v1);
+            statement.setInt(2,v2);
+            statement.setInt(3,pret);
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()){
+                Jucarie jucarie = new Jucarie();
+                jucarie.setID(rs.getString("id_d"));
+                jucarie.setDenumire(rs.getString("den"));
+                jucarie.setPret(rs.getInt("pret"));
+                jucarie.setVarsta(rs.getInt("varsta"));
+                jucarie.setCantitate(rs.getInt("cantitate"));
+                jucarie.setPr_vandute(rs.getInt("pr_vandute"));
+                jucarie.setTara(rs.getString("tara"));
+                lista.add(jucarie);
+            }
+        }
+        catch (SQLException e) {throw new DaoException(e);}
+        finally {
+            close(statement);
+            close(conn);
+        }
+        return lista;
+    }
+
+    @Override
+    public int countToysSold() throws DaoException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        int n = 0;
+
+        try{
+            conn=conexiune.createConnection();
+            statement=conn.prepareStatement(SQL_COUNT_TOYS_SOLD_1DAY);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next() || rs!=null) n=rs.getInt("produse_vandute_in_1_zi");
+        }
+        catch (SQLException e) {throw new DaoException(e);}
+        finally {
+            close(statement);
+            close(conn);
+        }
+
+        return n;
+    }
+
+    @Override
+    public List<Jucarie> findPopularToys() throws DaoException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        List<Jucarie> lista = new ArrayList<>();
+        try{
+            conn=conexiune.createConnection();
+            statement=conn.prepareStatement(SQL_SORT_TOYS_BY_POPULARITY);
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()){
+                Jucarie jucarie = new Jucarie();
+                jucarie.setID(rs.getString("id_d"));
+                jucarie.setDenumire(rs.getString("den"));
+                jucarie.setPret(rs.getInt("pret"));
+                jucarie.setVarsta(rs.getInt("varsta"));
+                jucarie.setCantitate(rs.getInt("cantitate"));
+                jucarie.setPr_vandute(rs.getInt("pr_vandute"));
+                jucarie.setTara(rs.getString("tara"));
+                lista.add(jucarie);
+            }
+        }
+        catch (SQLException e) {throw new DaoException(e);}
+        finally {
+            close(statement);
+            close(conn);
+        }
+        return lista;
+    }
+
+    @Override
+    public boolean create(Jucarie jucarie) throws DaoException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        try{
+            conn=conexiune.createConnection();
+            statement= conn.prepareStatement(SQL_INSERT);
+            String table = null;
+            if(jucarie.getID().startsWith("d")) table="papusi";
+            else if(jucarie.getID().startsWith("p")) table="puzzle";
+            else if(jucarie.getID().startsWith("m")) table="masini";
+            else if(jucarie.getID().startsWith("l")) table="lego";
+            statement.setString(1,table);
+            statement.setString(2,jucarie.getID());
+            statement.setString(3, jucarie.getDenumire());
+            statement.setInt(4,jucarie.getPret());
+            statement.setInt(5,jucarie.getVarsta());
+            statement.setInt(6,jucarie.getCantitate());
+            statement.setInt(7,jucarie.getPr_vandute());
+            statement.setString(8,jucarie.getTara());
+            int rowsAffected = statement.executeUpdate();
+            if(rowsAffected>0) {actualizare(); return true; } else return false;
+        }
+        catch (SQLException e) {throw  new DaoException(e);}
+        finally {
+            close(statement);
+            close(conn);
+        }
+
+    }
+
+    public void adaugare() throws IOException {
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        Jucarie jucarie = new Jucarie();
+        String table = null;
+        while(!(table.equals("puzzle") || table.equals("masini") || table.equals("lego") || table.equals("papusi"))){
+            System.out.print("Ce fel de jucarie vrei sa adaugi[puzzle, papusi, masini, lego]: ");
+            table=bf.readLine();
+        }
+        String ID = null;
+    if(table=="puzzle") ID=cautare_id("p");
+    else if(table=="papusi") ID=cautare_id("d");
+    else if(table=="lego") ID=cautare_id("l");
+    else if(table=="masini") ID=cautare_id("m");
+
+    jucarie.setID(ID);
+
+    System.out.print("Denumire: "); String den = bf.readLine();
+    System.out.print("Pret: "); int pret = Integer.parseInt(bf.readLine());
+    System.out.print("Varsta minima: "); int v = Integer.parseInt(bf.readLine());
+    System.out.print("Cantitate: "); int cantitate = Integer.parseInt(bf.readLine());
+    System.out.print("Produse vandute: "); int pr = Integer.parseInt(bf.readLine());
+    System.out.print("Tara: "); String tara = bf.readLine();
+
+    jucarie.setDenumire(den);
+    jucarie.setPret(pret);
+    jucarie.setVarsta(v);
+    jucarie.setPr_vandute(pr);
+    jucarie.setCantitate(cantitate);
+    jucarie.setTara(tara);
+        try {
+            if(create(jucarie)) System.out.println("Adaugarea a avut loc cu succes!"); else System.out.println("Adaugarea n-a avut loc.");
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public String cautare_id(String id){
+            Connection conn = null;
+            PreparedStatement statement = null;
+            String s = null;
+        try {
+            conn = conexiune.createConnection();
+            int k = 1, n = 1;
+
+            while (k != 0) {
+                s = id + n;
+                statement = conn.prepareStatement(SQL_FIND_ID);
+                statement.setString(1,s);
+                ResultSet rs = statement.executeQuery();
+                if (rs.next()) {
+                    n++;
+                    s = id + n;
+                } else {
+                    return s;
+                }
+            }
+        }
+        catch(SQLException e) {e.printStackTrace();}
+        finally {
+            close(statement);
+            close(conn);
+        }
+        return s;
+
+    }
+
+    public void actualizare(){
+        Connection conn = null;
+        PreparedStatement statement = null;
+        try{
+            conn=conexiune.createConnection();
+            statement=conn.prepareStatement(SQL_datele);
+            int rows = statement.executeUpdate();
+        }
+        catch (SQLException e) {e.printStackTrace();}
+        finally {
+            close(statement);
+            close(conn);
+        }
+    }
+
+    public void meniu() throws IOException{
+        int k=-1;
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        try{
+        while(k!=0){
+            System.out.println("0-Exit\n1-Adauga o noua jucarie\n2-Afiseaza cea mai scumpa si cea mai ieftina jucarie");
+            System.out.println("3-Afiseaza papusile ordonate dupa pret\n4-Pretul mediu al jucariilor produse intr-o tara");
+            System.out.println("5-Afiseaza atributele jucariilor produse in Moldova");
+            System.out.println("6-Afiseaza jucariile pentru copii cuprinsi in varsta precizata si mai ieftine de pretul indicat");
+            System.out.println("7-Numarul jucariilor vandute\n8-Afiseaza jucariile ordonate dupa popularitate");
+            System.out.print("Introdu k: "); k = Integer.parseInt(bf.readLine());
+            switch (k) {
+                case 1: adaugare(); break;
+                case 2: System.out.println(findCheapToy().toString());
+                        System.out.println(findExpensiveToy().toString());
+                        break;
+                case 3: for(Jucarie i:findAllDolls())
+                        System.out.println(i.toString());
+                        break;
+                case 4: System.out.print("Introdu tara: "); String tara = bf.readLine();
+                System.out.println("Pretul mediu al jucariilor fabricate in "+tara+ " este de "+ findAveragePriceCountry(tara)+" lei"); break;
+                case 5: for(Jucarie i:findAllMoldova())
+                            System.out.println(i.toString());
+                        break;
+                case 6: System.out.print("Introdu varsta 1: "); int v1 = Integer.parseInt(bf.readLine());
+                        System.out.print("Introdu varsta 2: "); int v2 = Integer.parseInt(bf.readLine());
+                        System.out.print("Introdu pretul: "); int pret = Integer.parseInt(bf.readLine());
+                        for(Jucarie i:findAllPriceAge(v1,v2,pret))
+                            System.out.println(i.toString());
+                    break;
+                case 7: System.out.println("Au fost vandute "+countToysSold()+" jucarii"); break;
+                case 8: for(Jucarie i:findPopularToys())
+                    System.out.println(i.toString());
+                break;
+            }
+
+        }
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
+
+    }
+}

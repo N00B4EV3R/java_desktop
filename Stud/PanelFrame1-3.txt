@@ -1,0 +1,81 @@
+public class PanelFrame1 extends JPanel{
+        public PanelFrame1(){
+            setLayout(null);
+
+            JLabel label = new JLabel("Panel 1");
+            label.setFont(new Font("Tahoma", Font.PLAIN, 20));
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setBounds(108, 33, 239, 31);
+            add(label);
+
+            JButton btnNewButton = new JButton("New button");
+            btnNewButton.setBounds(70, 99, 89, 23);
+            add(btnNewButton);
+
+            JLabel lblNewLabel = new JLabel("New Label");
+            lblNewLabel.setBounds(113, 154, 46, 14);
+            add(lblNewLabel);
+
+            JSpinner spinner = new JSpinner();
+            spinner.setBounds(281, 100, 29, 20);
+            add(spinner);
+
+            JFormattedTextField formattedTextField = new JFormattedTextField();
+            formattedTextField.setBounds(193, 217, 141, 20);
+            add(formattedTextField);
+        }
+    }
+    public class PanelFrame2 extends JPanel{
+        public PanelFrame2(){
+            setLayout(null);
+
+            JLabel label = new JLabel("Panel 2");
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setFont(new Font("Tahoma", Font.PLAIN, 20));
+            label.setBounds(108, 42, 239, 31);
+            add(label);
+
+            JEditorPane editorPane = new JEditorPane();
+            editorPane.setBounds(10, 111, 106, 20);
+            add(editorPane);
+
+            JToggleButton tglbtnNewToggleButton = new JToggleButton("New toggle button");
+            tglbtnNewToggleButton.setBounds(135, 11, 121, 23);
+            add(tglbtnNewToggleButton);
+
+            JComboBox comboBox = new JComboBox();
+            comboBox.setBounds(155, 168, 28, 20);
+            add(comboBox);
+
+            JButton btnNewButton = new JButton("New button");
+            btnNewButton.setBounds(275, 190, 89, 23);
+            add(btnNewButton);
+            JButton btnNewButton1 = new JButton("New Button 1");
+            btnNewButton1.setBounds(47, 208, 89, 23);
+            add(btnNewButton1);
+        }
+    }
+    public class PanelFrame3 extends JPanel{
+        public PanelFrame3(){
+            setLayout(null);
+
+            JLabel label = new JLabel("Panel 3");
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setFont(new Font("Tahoma", Font.PLAIN, 20));
+            label.setBounds(111, 43, 239, 31);
+            add(label);
+
+            JButton btnNewButton = new JButton("New Button");
+            btnNewButton.setBounds(127, 136, 89, 23);
+            add(btnNewButton);
+
+            JButton btnNewButton1 = new JButton("New Button 1");
+            btnNewButton1.setBounds(288, 198, 89, 23);
+            add(btnNewButton1);
+
+            JButton btnNewButton2 = new JButton("New Button 2");
+            btnNewButton2.setBounds(56, 198, 89, 23);
+            add(btnNewButton2);
+
+        }
+    }

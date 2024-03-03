@@ -1,0 +1,136 @@
+Ex cu salvarea datelor din formular in fisier
+
+//Main.java
+
+import controller.Controller;
+import model.Model;
+import view.View;
+
+public class Main {
+    public static void main(String[] args) {
+        Model model = new Model();
+        View view = new View();
+        new Controller(model, view);
+    }
+}
+
+
+//View.java
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+
+public class View extends JFrame {
+
+    private JTextField numeTextField;
+    private JTextField emailTextField;
+    private JPasswordField parolaPasswordField;
+    private JButton inregistrareButton;
+
+    public View() {
+        initUI();
+    }
+
+    private void initUI() {
+        setTitle("Inregistrare");
+        setSize(300, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+
+        JLabel numeLabel = new JLabel("Nume:");
+        numeTextField = new JTextField(20);
+        panel.add(numeLabel, new GridBagConstraints(0, 0, 1, 1, 0, 0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(5, 5, 5, 5), 0, 0));
+        panel.add(numeTextField, new GridBagConstraints(1, 0, 1, 1, 1, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+
+        JLabel emailLabel = new JLabel("Email:");
+        emailTextField = new JTextField(20);
+        panel.add(emailLabel, new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE,new Insets(5, 5, 5, 5), 0, 0));
+        panel.add(emailTextField, new GridBagConstraints(1, 1, 1, 1, 1, 0, GridBagConstraints.WEST, GridBagConstraints.NONE,new Insets(5, 5, 5, 5), 0, 0));
+
+        JLabel parolaLabel = new JLabel("Parola:");
+        parolaPasswordField = new JPasswordField(20);
+        panel.add(parolaLabel, new GridBagConstraints(0, 2, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE,new Insets(5, 5, 5, 5), 0, 0));
+        panel.add(parolaPasswordField, new GridBagConstraints(1, 2, 1, 1, 1, 0, GridBagConstraints.WEST, GridBagConstraints.NONE,new Insets(5, 5, 5, 5), 0, 0));
+
+        inregistrareButton = new JButton("Inregistrare");
+        panel.add(inregistrareButton, new GridBagConstraints(1, 3, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.NONE,new Insets(5, 5, 5, 5), 0, 0));
+
+        add(panel);
+        setPreferredSize(new Dimension(400, 200));
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    public String getNume() {
+        return numeTextField.getText();
+    }
+
+    public String getEmail() {
+        return emailTextField.getText();
+    }
+
+    public String getParola() {
+        return String.valueOf(parolaPasswordField.getPassword());
+    }
+
+    public void addInregistrareListener(ActionListener listener) {
+        inregistrareButton.addActionListener(listener);
+    }
+}
+
+
+//Controller
+
+import model.Model;
+import view.View;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+public class Controller {
+    private Model model;
+    private View view;
+
+    public Controller(Model model, View view) {
+        this.model = model;
+        this.view = view;
+
+        view.addInregistrareListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                model.setNume(view.getNume());
+                model.setEmail(view.getEmail());
+                model.setParola(view.getParola());
+
+                if (model.isValid()) {
+                    // Salvare date in fisier
+                    // ...
+                    try (PrintWriter writer = new PrintWriter(new File("inregistrari.txt"))) {
+                        writer.println(model.getNume());
+                        writer.println(model.getEmail());
+                        writer.println(model.getParola());
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Eroare la scrierea in fisier!");
+                        return;
+                    }
+
+
+                    JOptionPane.showMessageDialog(null, "Inregistrare reusita!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Date invalide!");
+                }
+            }
+        });
+    }
+}
